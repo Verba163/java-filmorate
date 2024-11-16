@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = "email")
 public class User {
     Long id;
