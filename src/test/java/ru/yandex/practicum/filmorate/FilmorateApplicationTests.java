@@ -93,6 +93,7 @@ class FilmorateApplicationTests {
 		assertThat(violations).hasSize(1);
 		assertThat(violations.iterator().next().getMessage()).isEqualTo("Продолжительность не может быть меньше 0");
 	}
+
 	@Test
 	public void personWithFutureBirthdayShouldFailValidation() {
 		User user = new User();
@@ -116,9 +117,9 @@ class FilmorateApplicationTests {
 		user.setEmail("121113@yandex.ru");
 
 		Set<ConstraintViolation<User>> violations = validator.validate(user);
-
 		assertThat(violations).isEmpty();
 	}
+
 	@Test
 	public void personWithIncorrectEmailShouldFailValidation() {
 		User user = new User();
@@ -131,6 +132,8 @@ class FilmorateApplicationTests {
 		assertThat(violations).isNotEmpty();
 		assertThat(violations.iterator().next().getMessage()).isEqualTo("Некорректный Email");
 	}
+
+	@Test
 	public void personWithCorrectEmailShouldPassValidation() {
 		User user = new User();
 		user.setBirthday(LocalDate.of(2000, 1, 1));
