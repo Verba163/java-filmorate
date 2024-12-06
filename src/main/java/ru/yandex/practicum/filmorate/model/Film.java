@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.filmorate.annotation.CustomDateAnnotation;
 
@@ -19,6 +20,9 @@ import java.time.LocalDate;
 public class Film {
     Long id;
 
+    @Getter
+    private int likeCount;
+
     @NotBlank(message = "Ошибка при создании фильма: название не может быть пустым")
     String name;
 
@@ -32,4 +36,8 @@ public class Film {
 
     @Positive(message = "Продолжительность не может быть меньше 0")
     Integer duration;
+
+    public void addLikes() {
+        this.likeCount++;
+    }
 }

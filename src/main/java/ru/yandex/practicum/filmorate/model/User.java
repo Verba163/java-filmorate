@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -29,4 +30,6 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Past(message = "Дата рождения должна быть в прошлом")
     LocalDate birthday;
+
+    Set<User> friends;
 }
