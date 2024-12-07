@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
@@ -39,6 +40,22 @@ public class UserControllerServiceTest {
         MockitoAnnotations.openMocks(this);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+    }
+
+    @Test
+    public void testAddUserWithEmptyNameShouldSetNameToLogin() {
+        InMemoryUserStorage userstorage = new InMemoryUserStorage();
+        User user = new User();
+        user.setEmail("test@example.com");
+        user.setLogin("testuser");
+        user.setEmail("121113@yandex.ru");
+        user.setBirthday(LocalDate.now().minusDays(1));
+
+        User addedUser = userstorage.addUser(user);
+
+        assertNotNull(addedUser);
+        assertEquals("testuser", addedUser.getName());
+        assertEquals(0L, addedUser.getId());
     }
 
     @Test
