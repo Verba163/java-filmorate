@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    private final Set<Likes> likes = new HashSet<>();
+    public final Set<Likes> likes = new HashSet<>();
 
     @Autowired
     public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
@@ -38,6 +38,9 @@ public class FilmService {
 
     public void addLike(Long userId, Long filmId) {
         validateUser(userId);
+        if (filmExists(filmId)) {
+            throw new NotFoundException("Фильм с ID " + filmId + " не найден");
+        }
 
         Likes like = new Likes(userId, filmId);
         if (likes.add(like)) {
@@ -54,6 +57,9 @@ public class FilmService {
 
     public ResponseEntity<String> removeLike(Long userId, Long filmId) {
         validateUser(userId);
+        if (filmExists(filmId)) {
+            throw new NotFoundException("Фильм с ID " + filmId + " не найден");
+        }
         Likes like = new Likes(userId, filmId);
 
         if (likes.remove(like)) {

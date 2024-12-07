@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -55,18 +54,14 @@ public class FilmController {
 
     @PutMapping("/{filmId}/like/{userId}")
     public ResponseEntity<Map<String, String>> addLike(@PathVariable Long filmId, @PathVariable Long userId) {
-        if (!filmService.filmExists(filmId)) {
-            throw new NotFoundException("Фильм с ID " + filmId + " не найден");
-        }
+
         filmService.addLike(userId, filmId);
         return ResponseEntity.ok(Collections.singletonMap("message", "Лайк добавлен"));
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
     public ResponseEntity<String> removeLike(@PathVariable Long filmId, @PathVariable Long userId) {
-        if (!filmService.filmExists(filmId)) {
-            throw new NotFoundException("Фильм с ID " + filmId + " не найден");
-        }
+
         filmService.removeLike(userId, filmId);
         return ResponseEntity.ok("Лайк удален");
     }

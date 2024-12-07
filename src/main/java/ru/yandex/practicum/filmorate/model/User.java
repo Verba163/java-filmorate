@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -17,7 +18,7 @@ import java.util.Set;
 @EqualsAndHashCode(of = "email")
 public class User {
     Long id;
-
+    Set<Long> friendsId = new HashSet<>();
     @NotBlank(message = "Email не может быть пустым")
     @Email(message = "Некорректный Email")
     String email;
@@ -31,5 +32,4 @@ public class User {
     @Past(message = "Дата рождения должна быть в прошлом")
     LocalDate birthday;
 
-    Set<User> friends;
 }
