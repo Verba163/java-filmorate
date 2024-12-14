@@ -11,7 +11,6 @@ import java.util.Map;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
-    long currentId = 0;
 
     @Override
     public Collection<User> getUsers() {
@@ -20,11 +19,11 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User user) {
-        user.setId(currentId++);
+        user.setId(getNextId());
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        users.put(currentId, user);
+        users.put(user.getId(), user);
         return user;
     }
 
@@ -32,5 +31,14 @@ public class InMemoryUserStorage implements UserStorage {
     public User updateUser(User user) {
         users.put(user.getId(), user);
         return user;
+    }
+
+    private long getNextId() {
+        long currentMaxId = users.keySet()
+                .stream()
+                .mapToLong(id -> id)
+                .max()
+                .orElse(0);
+        return ++currentMaxId;
     }
 }

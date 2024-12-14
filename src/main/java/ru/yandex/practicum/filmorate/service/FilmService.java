@@ -38,7 +38,7 @@ public class FilmService {
 
     public void addLike(Long userId, Long filmId) {
         validateUser(userId);
-        if (filmExists(filmId)) {
+        if (!filmExists(filmId)) {
             throw new NotFoundException("Фильм с ID " + filmId + " не найден");
         }
 
@@ -50,14 +50,14 @@ public class FilmService {
                     .orElseThrow(() -> new NotFoundException("Фильм не найден"));
             film.addLikes();
         } else {
-            throw new NotFoundException("Пользователь уже поставил лайк");
+            throw new NotFoundException("Пользователь с ID " + userId + " уже поставил лайк");
         }
 
     }
 
     public ResponseEntity<String> removeLike(Long userId, Long filmId) {
         validateUser(userId);
-        if (filmExists(filmId)) {
+        if (!filmExists(filmId)) {
             throw new NotFoundException("Фильм с ID " + filmId + " не найден");
         }
         Likes like = new Likes(userId, filmId);
@@ -66,7 +66,7 @@ public class FilmService {
             Film film = filmStorage.findAll().stream()
                     .filter(f -> f.getId().equals(filmId))
                     .findFirst()
-                    .orElseThrow(() -> new NotFoundException("Фильм не найден"));
+                    .orElseThrow(() -> new NotFoundException("Фильм с ID " + filmId + " не найден"));
 
             if (film.getLikeCount() > 0) {
                 film.setLikeCount(film.getLikeCount() - 1);
@@ -97,7 +97,7 @@ public class FilmService {
         boolean userExists = userStorage.getUsers().stream()
                 .anyMatch(user -> user.getId().equals(userId));
         if (!userExists) {
-            throw new NotFoundException("Пользователь не найден");
+            throw new NotFoundException("Пользователь c ID " + userId + " найден");
         }
     }
 }

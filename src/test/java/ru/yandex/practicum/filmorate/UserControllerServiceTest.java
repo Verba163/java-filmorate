@@ -55,7 +55,7 @@ public class UserControllerServiceTest {
 
         assertNotNull(addedUser);
         assertEquals("testuser", addedUser.getName());
-        assertEquals(0L, addedUser.getId());
+        assertEquals(1L, addedUser.getId());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class UserControllerServiceTest {
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             userService.getCommonFriends(1L, 3L);
         });
-        assertEquals("Пользователь не найден", exception.getMessage());
+        assertEquals("Пользователь с ID 1 не найден", exception.getMessage());
     }
 
     @Test

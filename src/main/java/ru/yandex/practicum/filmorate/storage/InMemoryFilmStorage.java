@@ -10,12 +10,11 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
-    long currentId = 0;
 
     @Override
     public Film addFilm(Film film) {
-        film.setId(currentId++);
-        films.put(currentId, film);
+        film.setId(getNextId());
+        films.put(film.getId(), film);
         return film;
     }
 
@@ -30,4 +29,13 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.values();
     }
 
+
+    private long getNextId() {
+        long currentMaxId = films.keySet()
+                .stream()
+                .mapToLong(id -> id)
+                .max()
+                .orElse(0);
+        return ++currentMaxId;
+    }
 }

@@ -2,10 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.filmorate.annotation.CustomDateAnnotation;
 
@@ -20,6 +17,7 @@ import java.time.LocalDate;
 public class Film {
     Long id;
 
+    @Setter
     @Getter
     private int likeCount;
 

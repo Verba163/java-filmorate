@@ -41,14 +41,14 @@ public class UserController {
         return userService.updateUser(newUser);
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+    @PutMapping("/{id}/friends/{friend-id}")
+    public User addFriend(@PathVariable("id") Long id, @PathVariable("friend-id") Long friendId) {
         return userService.addFriend(id, friendId);
     }
 
 
-    @DeleteMapping("/{id}/friends/{friendId}")
-    public ResponseEntity<String> removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+    @DeleteMapping("/{id}/friends/{friend-id}")
+    public ResponseEntity<String> removeFriend(@PathVariable("id") Long id, @PathVariable("friend-id") Long friendId) {
         ResponseEntity<String> response = userService.removeFriend(id, friendId);
         return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
 
@@ -61,8 +61,8 @@ public class UserController {
 
     }
 
-    @GetMapping("/{id}/friends/common/{otherId}")
-    public ResponseEntity<Set<Long>> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+    @GetMapping("/{id}/friends/common/{other-id}")
+    public ResponseEntity<Set<Long>> getCommonFriends(@PathVariable("id") Long id, @PathVariable("other-id") Long otherId) {
         Set<Long> commonFriends = userService.getCommonFriends(id, otherId);
         return ResponseEntity.ok(commonFriends);
     }

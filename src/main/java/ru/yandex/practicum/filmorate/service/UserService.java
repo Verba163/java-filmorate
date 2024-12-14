@@ -40,7 +40,7 @@ public class UserService {
         }
         if (!getUsers().stream().anyMatch(u -> u.getId().equals(user.getId()))) {
             log.error("Пользователь с ID {} не существует", user.getId());
-            throw new NotFoundException("Пользователь не найден для ID: " + user.getId());
+            throw new NotFoundException("Пользователь с ID" + user.getId() + " не найден");
         }
         return userStorage.updateUser(user);
     }
@@ -49,11 +49,11 @@ public class UserService {
         User user = userStorage.getUsers().stream()
                 .filter(u -> u.getId().equals(userId))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с ID" + userId + " не найден"));
         User friend = userStorage.getUsers().stream()
                 .filter(u -> u.getId().equals(friendId))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("Друг не найден"));
+                .orElseThrow(() -> new NotFoundException("Друг с ID " + friendId + " не найден"));
 
         if (user.getFriendsId() == null) {
             user.setFriendsId(new HashSet<>());
@@ -115,6 +115,6 @@ public class UserService {
         return userStorage.getUsers().stream()
                 .filter(u -> u.getId().equals(userId))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с ID " + userId + " не найден"));
     }
 }

@@ -52,22 +52,22 @@ public class FilmController {
         return filmService.update(newFilm);
     }
 
-    @PutMapping("/{filmId}/like/{userId}")
-    public ResponseEntity<Map<String, String>> addLike(@PathVariable Long filmId, @PathVariable Long userId) {
+    @PutMapping("/{film-id}/like/{user-id}")
+    public ResponseEntity<Map<String, String>> addLike(@PathVariable("film-id") Long filmId, @PathVariable("user-id") Long userId) {
 
         filmService.addLike(userId, filmId);
         return ResponseEntity.ok(Collections.singletonMap("message", "Лайк добавлен"));
     }
 
-    @DeleteMapping("/{filmId}/like/{userId}")
-    public ResponseEntity<String> removeLike(@PathVariable Long filmId, @PathVariable Long userId) {
+    @DeleteMapping("/{film-id}/like/{user-id}")
+    public ResponseEntity<String> removeLike(@PathVariable("film-id") Long filmId, @PathVariable("user-id") Long userId) {
 
         filmService.removeLike(userId, filmId);
         return ResponseEntity.ok("Лайк удален");
     }
 
     @GetMapping("/popular")
-    public List<Film> getTopFilms() {
-        return filmService.getTopPopularFilms(10);
+    public List<Film> getTopFilms(@RequestParam int count) {
+        return filmService.getTopPopularFilms(count);
     }
 }
