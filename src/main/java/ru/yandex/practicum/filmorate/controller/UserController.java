@@ -2,81 +2,68 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final Map<Long, User> users = new HashMap<>();
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
-    public Collection<User> getAllUsers() {
-        log.info("Получение всех пользователей. Всего пользователей: {}", users.size());
-        return users.values();
+    public ResponseEntity<Collection<User>> getUsers() {
+        log.info("Получение всех пользователей. Всего пользователей {}", userService.getUsers().size());
+        Collection<User> users = userService.getUsers();
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        try {
-            user.setId(getNextId());
-            if (user.getName() == null || user.getName().isBlank()) {
-                user.setName(user.getLogin());
-            }
-            users.put(user.getId(), user);
-
-            log.warn("Создание нового пользователя: {}", user);
-            return user;
-        } catch (ConditionsNotMetException e) {
-            log.error("Ошибка при создании пользователя: {}", e.getMessage());
-            throw e;
-        }
+        log.info("Создание нового пользователя: {}", user);
+        return userService.addUser(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User newUser) {
-        if (newUser.getId() == null) {
-            log.warn("Id должен быть указан");
-            throw new ConditionsNotMetException("Id должен быть указан");
-        }
-        if (users.containsKey(newUser.getId())) {
-            User oldUser = users.get(newUser.getId());
-            try {
-                if (newUser.getName().isBlank()) {
-                    oldUser.setName(newUser.getLogin());
-                }
-                oldUser.setName(newUser.getName());
-                oldUser.setLogin(newUser.getLogin());
-                oldUser.setEmail(newUser.getEmail());
-                oldUser.setBirthday(newUser.getBirthday());
-                log.warn("Обновление профиля: {} на {}", oldUser, newUser);
-                return oldUser;
-            } catch (ConditionsNotMetException e) {
-                log.error("Ошибка обновления профиля");
-                throw e;
-            }
-        }
-        log.warn("Ошибка при обновлении пользователя: Пользователь с id {} не найден", newUser.getId());
-        throw new ConditionsNotMetException("Пользователь с id " + newUser.getId() + " не найден");
+        log.info("Пользователь обновлен {}", newUser);
+        return userService.updateUser(newUser);
     }
 
-    private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @PutMapping("/{id}/friends/{friend-id}")
+    public User addFriend(@PathVariable("id") Long id, @PathVariable("friend-id") Long friendId) {
+        return userService.addFriend(id, friendId);
     }
 
+
+    @DeleteMapping("/{id}/friends/{friend-id}")
+    public ResponseEntity<String> removeFriend(@PathVariable("id") Long id, @PathVariable("friend-id") Long friendId) {
+        ResponseEntity<String> response = userService.removeFriend(id, friendId);
+        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+
+    }
+
+    @GetMapping("/{id}/friends")
+    public ResponseEntity<Set<Long>> getFriends(@PathVariable Long id) {
+        Set<Long> friends = userService.getFriends(id);
+        return ResponseEntity.ok(friends);
+
+    }
+
+    @GetMapping("/{id}/friends/common/{other-id}")
+    public ResponseEntity<Set<Long>> getCommonFriends(@PathVariable("id") Long id, @PathVariable("other-id") Long otherId) {
+        Set<Long> commonFriends = userService.getCommonFriends(id, otherId);
+        return ResponseEntity.ok(commonFriends);
+    }
 }
-
-
-
