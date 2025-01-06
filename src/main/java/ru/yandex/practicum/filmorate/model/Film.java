@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.filmorate.annotation.CustomDateAnnotation;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Film.
@@ -34,6 +35,12 @@ public class Film {
 
     @Positive(message = "Продолжительность не может быть меньше 0")
     Integer duration;
+
+    Mpa mpa;
+
+    List<Genre> genres;
+
+    Long likes;
 
     public void addLikes() {
         this.likeCount++;

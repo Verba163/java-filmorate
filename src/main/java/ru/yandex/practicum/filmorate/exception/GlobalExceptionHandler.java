@@ -19,4 +19,10 @@ public class GlobalExceptionHandler {
     public ErrorResponse handlerConditionsNotMetException(final ConditionsNotMetException e) {
         return new ErrorResponse("Ошибка валидации", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleInternalServerException(final InternalServerException e) {
+        return new ErrorResponse("Ошибка сервера", e.getMessage());
+    }
 }

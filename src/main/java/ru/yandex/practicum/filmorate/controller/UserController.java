@@ -3,12 +3,13 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -23,47 +24,47 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<User>> getUsers() {
-        log.info("Получение всех пользователей. Всего пользователей {}", userService.getUsers().size());
-        Collection<User> users = userService.getUsers();
-        return ResponseEntity.ok(users);
+    public List<UserDto> getUsers() {
+        List<UserDto> users = userService.getUsers();
+        log.info("Получение всех пользователей. Всего пользователей: {}", users.size());
+        return users;
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
-        log.info("Создание нового пользователя: {}", user);
-        return userService.addUser(user);
+    public UserDto create(@Valid @RequestBody UserDto userDto) {
+        log.info("Создание нового пользователя: {}", userDto);
+        return userService.addUser(userDto);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User newUser) {
-        log.info("Пользователь обновлен {}", newUser);
-        return userService.updateUser(newUser);
+    public UserDto updateUser(@Valid @RequestBody UserDto userDto) {
+        log.info("Обновление пользователя: {}", userDto);
+        return userService.updateUser(userDto);
     }
 
-    @PutMapping("/{id}/friends/{friend-id}")
-    public User addFriend(@PathVariable("id") Long id, @PathVariable("friend-id") Long friendId) {
+    @PutMapping("/{id}/friends/{friendId}")
+    public UserDto addFriend(@PathVariable("id") Long id, @PathVariable("friendId") Long friendId) {
+        log.info("Добавление друга с ID {} к пользователю с ID {}", friendId, id);
         return userService.addFriend(id, friendId);
     }
 
-
-    @DeleteMapping("/{id}/friends/{friend-id}")
-    public ResponseEntity<String> removeFriend(@PathVariable("id") Long id, @PathVariable("friend-id") Long friendId) {
-        ResponseEntity<String> response = userService.removeFriend(id, friendId);
-        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
-
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public UserDto removeFriend(@PathVariable("id") Long id, @PathVariable("friendId") Long friendId) {
+        log.info("Удаление друга с ID {} у пользователя с ID {}", friendId, id);
+        return userService.removeFriend(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
-    public ResponseEntity<Set<Long>> getFriends(@PathVariable Long id) {
-        Set<Long> friends = userService.getFriends(id);
-        return ResponseEntity.ok(friends);
-
+    public List<UserDto> getFriends(@PathVariable Long id) {
+        log.info("Получение списка друзей пользователя с ID {}", id);
+        Collection<UserDto> friends = userService.getFriends(id);
+        return new ArrayList<>(friends);
     }
 
-    @GetMapping("/{id}/friends/common/{other-id}")
-    public ResponseEntity<Set<Long>> getCommonFriends(@PathVariable("id") Long id, @PathVariable("other-id") Long otherId) {
-        Set<Long> commonFriends = userService.getCommonFriends(id, otherId);
-        return ResponseEntity.ok(commonFriends);
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<UserDto> getCommonFriends(@PathVariable("id") Long id, @PathVariable("otherId") Long otherId) {
+        log.info("Получение общих друзей между пользователями с ID {} и ID {}", id, otherId);
+        Collection<UserDto> commonFriends = userService.getCommonFriends(id, otherId);
+        return new ArrayList<>(commonFriends);
     }
 }
