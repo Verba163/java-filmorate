@@ -10,3 +10,8 @@ INSERT INTO genres(name) values ('Мультфильм');
 INSERT INTO genres(name) values ('Триллер');
 INSERT INTO genres(name) values ('Документальный');
 INSERT INTO genres(name) values ('Боевик');
+
+INSERT INTO USERS (EMAIL, LOGIN, BIRTHDAY, USERNAME)
+VALUES
+    ('user3@example.com', 'user3login', '1995-03-03', 'UserThree'),
+    ('user4@example.com', 'user4login', '1988-04-04', 'UserFour');
