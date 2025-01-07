@@ -7,9 +7,10 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -81,14 +82,28 @@ public class FilmLikeDbStorage {
     public List<Film> getPopularFilms(Long count) {
         log.info("Получение популярных фильмов в количестве {}", count);
 
-        String filmLikesQuery = "SELECT film_id FROM likes GROUP BY film_id ORDER BY COUNT(film_id) DESC LIMIT ?";
-        List<Long> filmIds = jdbcTemplate.queryForList(filmLikesQuery, Long.class, count);
+        String filmLikesQuery = """
+                SELECT film_id, COUNT(DISTINCT user_id) AS like_count
+                FROM likes \s
+                GROUP BY film_id
+                ORDER BY like_count DESC
+                LIMIT ?
+                \s""";
 
-        List<Film> popularFilms = filmDbStorage.findAll().stream()
-                .filter(film -> filmIds.contains(film.getId()))
-                .sorted((f1, f2) -> Long.compare(Objects.requireNonNullElse(f2.getLikes(), 0L),
-                        Objects.requireNonNullElse(f1.getLikes(), 0L)))
-                .collect(Collectors.toList());
+        List<Map<String, Object>> filmResults = jdbcTemplate.queryForList(filmLikesQuery, count);
+
+        List<Film> popularFilms = new ArrayList<>();
+
+        for (Map<String, Object> row : filmResults) {
+            Long filmId = ((Number) row.get("film_id")).longValue();
+            Long likeCount = ((Number) row.get("like_count")).longValue();
+
+            Film film = filmDbStorage.findById(filmId);
+            if (film != null) {
+                film.setLikes(likeCount);
+                popularFilms.add(film);
+            }
+        }
 
         popularFilms.forEach(film -> log.info("Количество лайков фильма {} равно {}", film.getId(), film.getLikes()));
         return popularFilms;
