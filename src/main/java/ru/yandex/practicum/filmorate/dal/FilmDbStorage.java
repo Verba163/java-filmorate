@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.mapper.FilmRowMapper;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -49,6 +50,7 @@ public class FilmDbStorage implements FilmStorage {
         Long generatedId = getGeneratedId(keyHolder);
         film.setId(generatedId);
         addGenresForFilm(film.getGenres(), generatedId);
+
         addMpaForFilm(film.getMpa(), generatedId);
 
         return film;
@@ -83,8 +85,15 @@ public class FilmDbStorage implements FilmStorage {
 
     private void addMpaForFilm(Mpa mpa, Long filmId) {
         if (mpa.getId() != null) {
-            String mpaQuery = "INSERT INTO film_mpa (film_id, mpa_id) VALUES (?, ?)";
-            jdbcTemplate.update(mpaQuery, filmId, mpa.getId());
+            String checkMpaExistsQuery = "SELECT COUNT(*) FROM mpa WHERE id = ?";
+            Integer count = jdbcTemplate.queryForObject(checkMpaExistsQuery, new Object[]{mpa.getId()}, Integer.class);
+
+            if (count != null && count > 0) {
+                String mpaQuery = "INSERT INTO film_mpa (film_id, mpa_id) VALUES (?, ?)";
+                jdbcTemplate.update(mpaQuery, filmId, mpa.getId());
+            } else {
+               throw new NotFoundException("Указанный рейтинг не существует" + mpa.getId());
+            }
         } else {
             throw new IllegalArgumentException("Рейтинг не содержит идентификатор.");
         }

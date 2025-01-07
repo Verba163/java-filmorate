@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.mapper.MpaRowMapper;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
@@ -27,13 +29,16 @@ public class MpaDbStorage implements MpaStorage {
     @Override
     public Mpa findById(Long id) {
         String query = "SELECT id, name FROM mpa WHERE id = ?";
-        validateMpa(id);
-        return jdbcTemplate.queryForObject(query, mapper, id);
+        try {
+            return jdbcTemplate.queryForObject(query, mapper, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("MPA не найден с ID: " + id);
+        }
     }
 
     public void validateMpa(Long mpaId) {
         if (!existsById(mpaId)) {
-            throw new NotFoundException("MPA не найден с ID: " + mpaId);
+            throw new ConditionsNotMetException("MPA не найден с ID: " + mpaId);
         }
     }
 

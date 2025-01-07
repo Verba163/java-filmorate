@@ -27,9 +27,6 @@ public class MpaService {
 
     public MpaDto findById(Long id) {
         Mpa mpa = mpaDbStorage.findById(id);
-        if (mpa == null) {
-            throw new NotFoundException("Рейтинг по id " + id + " не найден");
-        }
         return MpaMapper.mapToDto(mpa);
     }
 }

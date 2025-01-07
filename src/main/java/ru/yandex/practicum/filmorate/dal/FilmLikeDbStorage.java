@@ -81,8 +81,8 @@ public class FilmLikeDbStorage {
     public List<Film> getPopularFilms(Long count) {
         log.info("Получение популярных фильмов в количестве {}", count);
 
-        String filmLikesQuery = "SELECT film_id, COUNT(film_id) AS likesCount FROM likes GROUP BY film_id ORDER BY likesCount DESC";
-        List<Long> filmIds = jdbcTemplate.queryForList(filmLikesQuery, Long.class);
+        String filmLikesQuery = "SELECT film_id FROM likes GROUP BY film_id ORDER BY COUNT(film_id) DESC LIMIT ?";
+        List<Long> filmIds = jdbcTemplate.queryForList(filmLikesQuery, Long.class, count);
 
         List<Film> popularFilms = filmDbStorage.findAll().stream()
                 .filter(film -> filmIds.contains(film.getId()))
@@ -91,7 +91,6 @@ public class FilmLikeDbStorage {
                 .collect(Collectors.toList());
 
         popularFilms.forEach(film -> log.info("Количество лайков фильма {} равно {}", film.getId(), film.getLikes()));
-
         return popularFilms;
     }
 }
