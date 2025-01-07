@@ -32,13 +32,13 @@ public class MpaDbStorage implements MpaStorage {
         try {
             return jdbcTemplate.queryForObject(query, mapper, id);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("MPA не найден с ID: " + id);
+            throw new NotFoundException(String.format("MPA не найден с ID: %d", id));
         }
     }
 
     public void validateMpa(Long mpaId) {
         if (!existsById(mpaId)) {
-            throw new ConditionsNotMetException("MPA не найден с ID: " + mpaId);
+            throw new ConditionsNotMetException(String.format("MPA не найден с ID: %d", mpaId));
         }
     }
 

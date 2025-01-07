@@ -28,7 +28,7 @@ public class GenresService {
     public GenresDto findById(Long id) {
         Genre genre = genresDbStorage.findById(id);
         if (genre == null) {
-            throw new NotFoundException("Жанр по id " + id + " не найден");
+            throw new NotFoundException(String.format("Жанр по ID: %d не найден", id));
         }
         return GenresMapper.mapToDto(genre);
     }

@@ -39,8 +39,10 @@ public class FilmService {
     public FilmDto findById(Long id) {
         Film film = filmDbStorage.findById(id);
         if (film == null) {
-            throw new NotFoundException("Фильм с ID " + id + " не найден");
+            throw new NotFoundException(String.format("Фильм с ID: %d не найден ", id));
+
         }
+
         return FilmMapper.mapToDto(film);
     }
 
@@ -54,13 +56,13 @@ public class FilmService {
         return filmLikeDbStorage.getPopularFilms(count).stream()
                 .map(FilmMapper::mapToDto)
                 .collect(Collectors.toList());
-        }
+    }
 
-public void addLike(long filmId, long userId) {
-    filmLikeDbStorage.addLike(filmId, userId);
-}
+    public void addLike(long filmId, long userId) {
+        filmLikeDbStorage.addLike(filmId, userId);
+    }
 
-public void removeLike(long filmId, long userId) {
-    filmLikeDbStorage.removeLike(filmId, userId);
-}
+    public void removeLike(long filmId, long userId) {
+        filmLikeDbStorage.removeLike(filmId, userId);
+    }
 }

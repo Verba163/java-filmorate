@@ -15,6 +15,7 @@ import java.util.List;
 public class FilmController {
 
     private final FilmService filmService;
+    private static final String LIKES_PATH = "/{film-Id}/like/{user-Id}";
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -46,14 +47,14 @@ public class FilmController {
         return filmService.updateFilm(filmDto);
     }
 
-    @PutMapping("/{id}/like/{user-id}")
-    public void addLike(@PathVariable("id") Long filmId, @PathVariable("user-id") Long userId) {
+    @PutMapping(LIKES_PATH)
+    public void addLike(@PathVariable("film-Id") Long filmId, @PathVariable("user-Id") Long userId) {
         log.info("Пользователь с ID {} поставил лайк фильму с ID {}", userId, filmId);
         filmService.addLike(filmId, userId);
     }
 
-    @DeleteMapping("/{film-id}/like/{user-id}")
-    public void removeLike(@PathVariable("film-id") Long filmId, @PathVariable("user-id") Long userId) {
+    @DeleteMapping(LIKES_PATH)
+    public void removeLike(@PathVariable("film-Id") Long filmId, @PathVariable("user-Id") Long userId) {
         log.info("Пользователь с ID {} убрал лайк с фильма с ID {}", userId, filmId);
         filmService.removeLike(userId, filmId);
     }

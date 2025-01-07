@@ -79,6 +79,6 @@ public class UserService {
 
     private User validateUserExists(Long userId) {
         return Optional.ofNullable(userDbStorage.getUserById(userId))
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с ID: %d не найден", userId)));
     }
 }
