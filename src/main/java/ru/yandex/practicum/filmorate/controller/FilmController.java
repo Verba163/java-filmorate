@@ -3,17 +3,11 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -21,6 +15,7 @@ import java.util.Map;
 public class FilmController {
 
     private final FilmService filmService;
+    private static final String LIKES_PATH = "/{film-Id}/like/{user-Id}";
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -28,46 +23,45 @@ public class FilmController {
     }
 
     @GetMapping
-    public Collection<Film> getAllFilms() {
+    public List<FilmDto> getAllFilms() {
         log.info("Получение всех фильмов. Всего фильмов {}:", filmService.findAll().size());
         return filmService.findAll();
     }
 
-    @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        log.warn("Создание нового фильма: {}", film);
-        return filmService.addFilm(film);
+    @GetMapping("/{id}")
+    public FilmDto findById(@PathVariable Long id) {
+        log.info("Найден фильм с ID {}: ", id);
+        return filmService.findById(id);
     }
+
+    @PostMapping
+    public FilmDto create(@Valid @RequestBody FilmDto filmDto) {
+        log.info("Создание нового фильма: {}", filmDto);
+        return filmService.addFilm(filmDto);
+    }
+
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film newFilm) {
-        if (newFilm.getId() == null) {
-            log.warn("Ошибка при обновлении фильма: Id должен быть указан");
-            throw new ConditionsNotMetException("Id должен быть указан");
-        }
-        if (!filmService.findAll().stream().anyMatch(film -> film.getId().equals(newFilm.getId()))) {
-            log.error("Фильм с ID {} не существует", newFilm.getId());
-            throw new NotFoundException("Фильм не найден для ID: " + newFilm.getId());
-        }
-        return filmService.update(newFilm);
+    public FilmDto updateFilm(@Valid @RequestBody FilmDto filmDto) {
+        log.info("Фильм обновлен {}", filmDto);
+        return filmService.updateFilm(filmDto);
     }
 
-    @PutMapping("/{film-id}/like/{user-id}")
-    public ResponseEntity<Map<String, String>> addLike(@PathVariable("film-id") Long filmId, @PathVariable("user-id") Long userId) {
-
-        filmService.addLike(userId, filmId);
-        return ResponseEntity.ok(Collections.singletonMap("message", "Лайк добавлен"));
+    @PutMapping(LIKES_PATH)
+    public void addLike(@PathVariable("film-Id") Long filmId, @PathVariable("user-Id") Long userId) {
+        log.info("Пользователь с ID {} поставил лайк фильму с ID {}", userId, filmId);
+        filmService.addLike(filmId, userId);
     }
 
-    @DeleteMapping("/{film-id}/like/{user-id}")
-    public ResponseEntity<String> removeLike(@PathVariable("film-id") Long filmId, @PathVariable("user-id") Long userId) {
-
+    @DeleteMapping(LIKES_PATH)
+    public void removeLike(@PathVariable("film-Id") Long filmId, @PathVariable("user-Id") Long userId) {
+        log.info("Пользователь с ID {} убрал лайк с фильма с ID {}", userId, filmId);
         filmService.removeLike(userId, filmId);
-        return ResponseEntity.ok("Лайк удален");
     }
 
     @GetMapping("/popular")
-    public List<Film> getTopFilms(@RequestParam int count) {
+    public List<FilmDto> getTopFilms(@RequestParam(defaultValue = "10") Long count) {
+        log.info("Получение топ {} популярных фильмов", count);
         return filmService.getTopPopularFilms(count);
     }
 }

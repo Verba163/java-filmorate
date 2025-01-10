@@ -1,27 +1,25 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.*;
-import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.filmorate.annotation.CustomDateAnnotation;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Film.
- */
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EqualsAndHashCode(of = "id")
-public class Film {
+public class FilmDto {
+
     Long id;
-
-    @Setter
-    @Getter
-    private int likeCount;
-
     @NotBlank(message = "Ошибка при создании фильма: название не может быть пустым")
     String name;
 
@@ -38,11 +36,6 @@ public class Film {
 
     Mpa mpa;
 
-    List<Genre> genres;
-
-    Long likes;
-
-    public void addLikes() {
-        this.likeCount++;
-    }
+    List<Genre> genres = new ArrayList<>();
 }
+
